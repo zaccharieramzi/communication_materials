@@ -6,7 +6,7 @@
 \definecolor{tomcolor}{rgb}{0.,.3,.6}
 \lstset{basicstyle=\color{tomcolor}\scriptsize\ttfamily}
 \addbibresource{../biblio/biblio.bib}
-
+\captionsetup[subfigure]{labelformat=empty}
 \begin{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -168,12 +168,45 @@ So far, we have implemented benchmarks for:\\[.5em]
 \vskip1em
 Feel free to join our effort to create reproducible benchmarks by adding new objectives/solvers/datasets!!!\\[1em]
 
-\includegraphics[width=.19\textwidth]{agramfort}
-\includegraphics[width=.19\textwidth]{jsalmon}
-\includegraphics[width=.19\textwidth]{mmassias}
-\includegraphics[width=.19\textwidth]{tomdlt}
-\includegraphics[width=.19\textwidth]{tommoral}
 
+
+\begin{figure}
+     \centering
+     \begin{subfigure}[b]{0.188\textwidth}
+         \centering
+         \includegraphics[width=0.85\textwidth]{agramfort}
+         \caption{A. Gramfort}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.188\textwidth}
+         \centering
+		\includegraphics[width=0.85\textwidth]{jsalmon}
+         \caption{J. Salmon}
+     \end{subfigure}
+	 \hfill
+     \begin{subfigure}[b]{0.188\textwidth}
+         \centering
+		 \includegraphics[width=0.85\textwidth]{mmassias}
+         \caption{M. Massias}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.188\textwidth}
+         \centering
+		\includegraphics[width=0.85\textwidth]{tomdlt}
+        \caption{T. Dupré la Tour}
+     \end{subfigure}
+	 \hfill
+     \begin{subfigure}[b]{0.188\textwidth}
+         \centering
+		\includegraphics[width=0.85\textwidth]{tommoral}
+        \caption{T. Moreau (the boss)}
+     \end{subfigure}
+\end{figure}
+
+
+
+
+% \includegraphics[width=.19\textwidth]{tommoral}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
