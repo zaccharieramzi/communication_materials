@@ -297,12 +297,12 @@ class Solver(BaseSolver):
     parameters = {"lr": [.1, .01]}
 
     def set_objective(self, X, y):
-        self.X, self.y  = X, y
+        self.X, self.y = X, y
 
     def run(self, n_iter):
         w = np.zeros(X.shape[1])
         for _ in range(n_iter):
-            w -= self.lr * (X @ w - y)
+            w -= self.lr * X.T @ (X @ w - y)
         self.w_ = w
 
     def get_result(self):
@@ -324,7 +324,7 @@ class Dataset(BaseDataset):
 
     parameters = {
       "n": [10, 100],
-      "p": [10, 100]
+      "p": [10, 100],
     }
 
     def get_data(self):
@@ -354,7 +354,7 @@ class Objective(BaseObjective):
     def set_data(self, X, y):
         self.X, self.y = X, y
 
-    def to_dict(self):
+    def get_objective(self):
         return dict(X=self.X, y=self.y)
 
     def compute(self, w):
@@ -484,8 +484,8 @@ class Objective(BaseObjective):
   \item Regularized Logistic Regression
   \item Total Variation Inverse Problems
   \item Quantile Regression
-  \item Mixed Complementarity Problem (MCP)
-  \item Non-Negative Least-square
+  \item Minimax Concave Penalty (MCP) Regression
+  \item Non-Negative Least-squares
   \item Independent Component Analysis
 \end{itemize}
 % \vskip.5em
