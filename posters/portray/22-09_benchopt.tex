@@ -23,7 +23,6 @@
 \usepackage{multicol}
 
 \usepackage{enumitem}
-
 %\usepackage{times}
 %\usepackage{helvet}
 %\usepackage{bookman}
@@ -302,7 +301,8 @@ class Solver(BaseSolver):
     def run(self, n_iter):
         w = np.zeros(X.shape[1])
         for _ in range(n_iter):
-            w -= self.lr * X.T @ (X @ w - y)
+            grad = X.T @ (X @ w - y)
+            w -= self.lr * grad
         self.w_ = w
 
     def get_result(self):
@@ -359,6 +359,7 @@ class Objective(BaseObjective):
 
     def compute(self, w):
         res = self.y - self.X @ w
+
         return dict(
           value=.5 * res @ res,
           norm=w @ w
