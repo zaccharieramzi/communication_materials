@@ -1,4 +1,4 @@
-\documentclass[a0paper,fontscale=0.265]{baposter} %fontscale=0.277
+\documentclass[landscape,a0paper,fontscale=0.265]{baposter}
 
 \usepackage{calc}
 %\usepackage{fourier}
@@ -247,7 +247,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\headerbox{Benchopt API}{name=api,column=0,row=0, span=6}{
+\headerbox{Benchopt API}{name=api,column=0,row=0, span=4}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -283,38 +283,79 @@
 
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Example of Solver
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{posterbox}[name=use-case-solver,column=4,span=2, below=api,
-                  boxColorOne=black!15,]{Adding a Solver}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Central eye-catching box
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{posterbox}[name=center,column=0,below=api,span=4,
+  boxheaderheight=0em,
+  boxColorOne=\maincolor,
+  ]{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  \begin{python}
-class Solver(BaseSolver):
-    name = "GD"
-    parameters = {"lr": [.1, .01]}
 
-    def set_objective(self, X, y):
-        self.X, self.y = X, y
 
-    def run(self, n_iter):
-        w = np.zeros(X.shape[1])
-        for _ in range(n_iter):
-            grad = X.T @ (X @ w - y)
-            w -= self.lr * grad
-        self.w_ = w
-
-    def get_result(self):
-        return self.w_
-    \end{python}
-    \vskip-1.8em\phantom{.}
+%
+%%%%%%%%%%%%%%%%%%%%%%%
+% Left box - goodies
+%%%%%%%%%%%%%%%%%%%%%%%
+\fcolorbox{black}{white}{
+\begin{minipage}[c][16em]{.239\linewidth}
+\raggedright
+{\bf Research paper benchmarks:}
+\begin{itemize}
+\item Not transparent
+\item Hard to reproduce
+\item Time consuming
+\item Frozen in time
+\end{itemize}
+\vskip1em\centering
+{\bf Benchopt solves this!}\\
+% {\bf Easy benchmark run:}
+% \begin{itemize}
+%   \item Modular and collaborative
+%   \item Automatic caching
+%   \item Parallelization with \texttt{joblib} and {SLURM}
+%   \item Cross languages: R, Julia
+% \end{itemize}
+\end{minipage}
+}
+\hskip2ex
+%
+%%%%%%%%%%%%%%%%%%%%%%%
+% Center Logo and QR code
+%%%%%%%%%%%%%%%%%%%%%%%
+\begin{minipage}{.39\linewidth}
+\centering
+\includegraphics[width=0.5\linewidth]{logo_benchopt}\\
+{\color{white}\bf\Large Reproducible, Extendable and Shareable Benchmarks\\[.5em]}
+\hfill
+\includegraphics[width=0.2\linewidth]{qr-doc}\hfill
+\includegraphics[width=0.2\linewidth]{qr-pdf}\hfill\phantom{.}\\
+\raisebox{-.5em}{\includegraphics[height=2em]{logo_github}} {\bf\color{white}~~https://github.com/benchopt/benchopt}
+\end{minipage}
+\hskip2ex
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Right box - publish information
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fcolorbox{black}{white}{
+\begin{minipage}[c][16em]{.239\linewidth}
+\raggedright
+{\bf Publishable results:}\\[.5em]
+\centering
+% \includegraphics[width=0.45\linewidth]{benchopt_results}
+\raisebox{-2ex}{\includegraphics[width=0.95\linewidth]{benchopt_convnet}}
+\end{minipage}
+}
 \end{posterbox}
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example of Dataset
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{posterbox}[name=use-case-data,column=0,span=2, below=api,
+\begin{posterbox}[name=use-case-data,column=4,span=2, %below=center,
   boxColorOne=black!15,]{Adding a Dataset}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -322,17 +363,12 @@ class Solver(BaseSolver):
 class Dataset(BaseDataset):
     name = "Simulated"
 
-    parameters = {
-      "n": [10, 100],
-      "p": [10, 100],
-    }
+    parameters = {"n": [10, 100], "p": [10, 100]}
 
     def get_data(self):
         rng = np.random.RandomState(27)
-
         X = rng.randn(self.n, self.p)
         y = X @ rng.randn(self.p)
-
         return dict(X=self.X, y=self.y)
 
     \end{python}
@@ -343,7 +379,7 @@ class Dataset(BaseDataset):
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example of Objective
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{posterbox}[name=use-case-obj,column=2,span=2, below=api,
+\begin{posterbox}[name=use-case-obj,column=4,span=2, below=use-case-data,
   boxColorOne=black!15]{Adding an Objective}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -359,88 +395,47 @@ class Objective(BaseObjective):
 
     def compute(self, w):
         res = self.y - self.X @ w
-
-        return dict(
-          value=.5 * res @ res,
-          norm=w @ w
-        )
+        return dict(value=.5 * res @ res, norm=w @ w)
 
 \end{python}
 \vskip-1.8em\phantom{.}
 \end{posterbox}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Central eye-catching box
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{posterbox}[name=center,column=0,below=use-case-solver,span=6,
-                  boxheaderheight=0em,
-                  boxColorOne=\maincolor,
-                  ]{}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Example of Solver
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{posterbox}[name=use-case-solver,column=4,span=2, below=use-case-obj,
+  boxColorOne=black!15,]{Adding a Solver}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{python}
+class Solver(BaseSolver):
+    name = "GD"
+    parameters = {"lr": [.1, .01]}
 
+    def set_objective(self, X, y):
+        self.X, self.y = X, y
 
-%
-%%%%%%%%%%%%%%%%%%%%%%%
-% Left box - goodies
-%%%%%%%%%%%%%%%%%%%%%%%
-\fcolorbox{black}{white}{
-\begin{minipage}[c][16em]{.239\linewidth}
-    \raggedright
-    {\bf Research paper benchmarks:}
-    \begin{itemize}
-      \item Not transparent
-      \item Hard to reproduce
-      \item Time consuming
-      \item ``Frozen''
-    \end{itemize}
-    \vskip1em\centering
-    {\bf Benchopt solves this!}\\
-    % {\bf Easy benchmark run:}
-    % \begin{itemize}
-    %   \item Modular and collaborative
-    %   \item Automatic caching
-    %   \item Parallelization with \texttt{joblib} and {SLURM}
-    %   \item Cross languages: R, Julia
-    % \end{itemize}
-  \end{minipage}
-}
-\hskip2ex
-%
-%%%%%%%%%%%%%%%%%%%%%%%
-% Center Logo and QR code
-%%%%%%%%%%%%%%%%%%%%%%%
-\begin{minipage}{.39\linewidth}
-  \centering
-  \includegraphics[width=0.5\linewidth]{logo_benchopt}\\
-  {\color{white}\bf\Large Reproducible, Extendable and Shareable Benchmarks\\[.5em]}
-  \hfill
-  \includegraphics[width=0.2\linewidth]{qr-doc}\hfill
-  \includegraphics[width=0.2\linewidth]{qr-pdf}\hfill\phantom{.}\\
-  \raisebox{-.5em}{\includegraphics[height=2em]{logo_github}} {\bf\color{white}~~https://github.com/benchopt/benchopt}
-\end{minipage}
-\hskip2ex
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Right box - publish information
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\fcolorbox{black}{white}{
-  \begin{minipage}[c][16em]{.239\linewidth}
-    \raggedright
-    {\bf Publishable results:}\\[.5em]
-    \centering
-    % \includegraphics[width=0.45\linewidth]{benchopt_results}
-    \raisebox{-2ex}{\includegraphics[width=0.95\linewidth]{benchopt_convnet}}
-  \end{minipage}
-}
+    def run(self, n_iter):
+        w = np.zeros(X.shape[1])
+        for _ in range(n_iter):
+            grad = X.T @ (X @ w - y)
+            w -= self.lr * grad
+            self.w_ = w
+
+    def get_result(self):
+        return self.w_
+    \end{python}
+    \vskip-1.8em\phantom{.}
 \end{posterbox}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Benchmark resnet
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\headerbox{ResNet for Image Classification}{name=resnet,column=0,below=center,span=6}{
+\headerbox{ResNet for Image Classification}{name=resnet,column=0,below=center,span=4}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \hskip-4ex
 \begin{minipage}{.42\textwidth}
@@ -451,8 +446,8 @@ class Objective(BaseObjective):
     \item Compare \texttt{Pytorch} and \texttt{Tensorflow}
     \item Reproducible SOTA results for baselines
   \end{itemize}
-\end{minipage}\hskip2ex
-\begin{minipage}{.5\textwidth}
+\end{minipage}\hskip1ex
+\begin{minipage}{.55\textwidth}
   \includegraphics[width=\textwidth]{resnet18_sgd_torch}
   \includegraphics[width=\textwidth]{resnet18_sgd_torch_legend}
 \end{minipage}%
@@ -478,36 +473,41 @@ class Objective(BaseObjective):
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Benchmark logreg
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\headerbox{Some Other Benchmarks}{name=benchmarks,column=3,below=resnet,span=3}{
+\headerbox{Some Other Benchmarks}{name=benchmarks,column=4,below=use-case-solver,span=2}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vskip.5em
-\begin{itemize}
-  \item Regularized Logistic Regression
-  \item Total Variation Inverse Problems
-  \item Quantile Regression
-  \item Minimax Concave Penalty (MCP) Regression
+\hskip-5ex
+\begin{minipage}[t]{.8\textwidth}
+
+  \begin{itemize}[itemsep=-2pt]
+    \item Regularized Logistic Regression
+    \item Total Variation Inverse Problems
+    \item Quantile Regression
+    \item Sparse Regression
   \item Non-Negative Least-squares
   \item Independent Component Analysis
 \end{itemize}
-% \vskip.5em
-{\bf\centering\Large Add yours with our template!!\hskip3ex
-\raisebox{-1em}{\includegraphics[height=3em]{qr-template}}
-\\}
+% \vs pace{-7mm}
+{\bf\centering\Large Add yours with our template!!\hskip3ex\\}
+\end{minipage}
+\begin{minipage}[t]{.19\textwidth}
+  \vskip2.5em\includegraphics[height=5.5em]{qr-template}
+\end{minipage}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Benchmark Lasso
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\headerbox{Lasso}{name=lasso,column=0,below=resnet,span=3,bottomaligned=benchmarks}{
+\headerbox{Lasso}{name=lasso,column=0,below=resnet,span=4,bottomaligned=benchmarks}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\[
-    \min_\beta\frac12\|y - X\beta\|_2^2 + \lambda\|\beta\|_1
-\]
+% \[
+%     \min_\beta\frac12\|y - X\beta\|_2^2 + \lambda\|\beta\|_1
+% \]
 \centering
-\includegraphics[width=\textwidth,trim={0 48em 0 0},clip]{meg_rcv1_news20_MSD.pdf}\\
-\includegraphics[width=\textwidth,trim={0 0 0 62em},clip]{meg_rcv1_news20_MSD.pdf}\\[.5em]
-\includegraphics[width=.9\textwidth]{meg_rcv1_news20_MSD_legend}\\
+\includegraphics[width=0.7\textwidth,trim={0 48em 0 0},clip]{meg_rcv1_news20_MSD.pdf}
+% \includegraphics[width=\textwidth,trim={0 0 0 62em},clip]{meg_rcv1_news20_MSD.pdf}\\[.5em]
+\hspace{6mm}\raisebox{1em}{
+\includegraphics[width=.2\textwidth]{meg_rcv1_news20_MSD_legend_vert}}\\
 
 
 }
