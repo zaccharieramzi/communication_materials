@@ -1,0 +1,481 @@
+\documentclass[unknownkeysallowed]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{dirtree}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{tikzmark}
+\usepackage{../sty/beamer_js}
+\usepackage{../sty/shortcuts_js}
+
+\definecolor{tomcolor}{rgb}{0.,.3,.6}
+
+
+
+\definecolor{kw}{RGB}{0,112,26}
+\definecolor{var}{RGB}{0,133,182}
+\definecolor{func}{RGB}{0,35,126}
+\definecolor{palegreen}{RGB}{236,240,241}
+\setbeamercolor{bgcolor}{fg=black!60,bg=palegreen}
+
+\lstset{basicstyle=\color{tomcolor}\scriptsize\ttfamily}
+\addbibresource{../biblio/biblio.bib}
+\captionsetup[subfigure]{labelformat=empty}
+
+
+\newcommand*{\colorboxed}{}
+\def\colorboxed#1#{%
+  \colorboxedAux{#1}%
+}
+\newcommand*{\colorboxedAux}[3]{%
+  % #1: optional argument for color model
+  % #2: color specification
+  % #3: formula
+  \begingroup
+    \colorlet{cb@saved}{.}%
+    \color#1{#2}%
+    \boxed{%
+      \color{cb@saved}%
+      #3%
+    }%
+  \endgroup
+}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%             Headers               %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\bigskip
+\bigskip
+\begin{center}{
+\LARGE\color{marron}
+\textbf{\texttt{benchopt}:\\
+		Benchmarking optimization Algorithms}
+\textbf{ }\\
+\vspace{0.5cm}
+}
+
+\color{marron}
+% \textbf{or... an introduction to Beamer instead}
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{center}
+\textbf{Zaccharie Ramzi} \\
+\vspace{0.1cm}
+\url{https://zaccharieramzi.fr/}\\
+\vspace{0.5cm}
+ENS Ulm - CNRS \\
+\end{center}
+
+\centering
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{The problem}
+
+    \begin{columns}
+        \column{.5\textwidth}
+        \includegraphics[width=\textwidth]{tweet_steinner}
+        \includegraphics[width=\textwidth]{tweet_steinner2}
+        \column{.5\textwidth}
+            \includegraphics[width=\textwidth]{DL_optimizers}
+    \end{columns}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Benchmarking algorithms in practice}
+
+Choosing the best algorithm to solve an optimization problem often depends on:\\[1em]
+
+\begin{minipage}{.8\textwidth}
+\begin{itemize}
+	\item the data \mybold{scale, conditionning};
+	\item the objective parameters \mybold{regularisation};
+	\item the implementation \mybold{complexity, language}.
+\end{itemize}
+\end{minipage}
+
+\vskip2em
+An impartial selection requires a time-consuming {\bf benchmark}!\\[1em]
+
+
+The goal of {\bf \texttt{benchopt}} is to make this step as easy as possible.
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{\texttt{benchopt}}
+
+Doing a  benchmark for the $\ell_2$ regularized logistic regression with multiple solvers and datasets is now as easy as calling:\\[1em]
+
+\begin{lstlisting}[language=bash]
+git clone https://github.com/benchopt/benchmark_logreg_l2
+benchopt run ./benchmark_logreg_l2
+\end{lstlisting}
+
+\vskip1.5em
+\includegraphics[width=.45\textwidth]{logreg_l2}
+\hskip3ex
+\includegraphics[width=.45\textwidth]{logreg_l2_1}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\texttt{benchopt}}
+
+    \texttt{benchopt} can also compare the same algo in different languages.\\[1em]
+
+    Here is an example comparing PGD in: Python; R; Julia.\\[1em]
+    {\centering
+    \vskip.5em
+    \includegraphics[width=.65\textwidth]{lasso_3_languages}\\}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\texttt{benchopt}}
+
+    \texttt{benchopt} also allow to publish easily benchmark results:\\[1em]
+
+
+    {\centering
+
+    \url{https://benchopt.github.io/results/}\\[2em]
+    \vskip.5em
+    \includegraphics[width=.65\textwidth]{benchopt_results}\\}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{What is \texttt{benchopt}?}
+    \centering
+    \texttt{benchopt} is a set of meta-benchmarking tools.
+    It offers:
+    \begin{itemize}
+        \item a \mybold{template repository} to create benchmarks;
+        \item a \mybold{Python library} to run benchmarks;
+        \item a \mybold{web interface} to publish results.
+    \end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\texttt{Benchmark}}
+    \centering
+    \includegraphics[width=.9\textwidth]{benchmark_lasso}\\
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Benchmark: principle}
+
+A benchmark is a directory with:\\
+\begin{itemize}
+    \item an \lstinline+objective.py+ file with an \lstinline+Objective+;
+    \item a directory \lstinline+solvers+ with one file per \lstinline+Solver+;
+    \item a directory \lstinline+datasets+ with \lstinline+Dataset+ generators/fetchers.
+\end{itemize}
+\vskip1em
+
+\includegraphics[width=.9\textwidth,trim={0 0 0 2.8em},clip]{benchopt_structure}
+
+\vskip1em
+The \lstinline+benchopt+ client runs a cross product and generates a csv file + convergence plots like above.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Benchmark: Objective \& Dataset}
+
+    \begin{beamercolorbox}[rounded=true,shadow=true,leftskip=2ex,colsep*=.75ex]{bgcolor}%
+            \texttt{
+                \textcolor{kw}{\bf class} \textcolor{var}{\bf Objective(BaseObjective)}:\\
+                \hskip4ex name = \textcolor{var!60}{"Benchmark Name"}\\[1em]
+                \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{set\_data}%
+                (self, X, y):\\
+                \hskip8ex\# Store data\\
+                \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{compute}%
+                (self, beta):\\
+                \hskip8ex return dict\{obj1:.., obj2:..\}\\
+                \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{to\_dict}%
+                (self):\\
+                \hskip8ex return dict\{X:.., y:.., reg:..\}\\
+            }
+    \end{beamercolorbox}%
+    \vskip1.5em
+    \begin{beamercolorbox}[rounded=true,shadow=true,leftskip=2ex,colsep*=.75ex]{bgcolor}%
+        \texttt{
+            \textcolor{kw}{\bf class} \textcolor{var}{\bf Dataset(BaseDataset)}:\\
+            \hskip4ex name = \textcolor{var!60}{"Dataset Name"}\\[1em]
+            \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{get\_data}%
+            (self):\\
+            \hskip8ex return dict\{X:.., y:..\}\\
+        }
+    \end{beamercolorbox}%
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Benchmark: Solver}
+
+    \begin{beamercolorbox}[rounded=true,shadow=true,leftskip=2ex,colsep*=.75ex]{bgcolor}%
+        \texttt{
+            \textcolor{kw}{\bf class} \textcolor{var}{\bf Solver(BaseSolver)}:\\
+            \hskip4ex name = \textcolor{var!60}{"Solver Name"}\\[1em]
+            \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{set\_objective}%
+            (self, X, y, reg):\\
+            \hskip8ex\# Store objective info\\[1em]
+            \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{run}%
+            (self, n\_iter):\\
+            \hskip8ex \# Run computations for \textcolor{var}{n\_iter}\\[1em]
+            \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{get\_result}%
+            (self):\\
+            \hskip8ex return \textcolor{var}{beta}\\
+        }
+    \end{beamercolorbox}%
+
+    \vskip1em
+    \rem {\bf Flexible API}\\
+    \begin{itemize}
+        \item \texttt{\textcolor{func}{get\_data}} and \texttt{\textcolor{func}{set\_objective}} enable compatibility between packages.
+        \item \texttt{\textcolor{var}{n\_iter}} can be replaced with a tolerance or a callback.
+    \end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Contributions : two use cases}
+
+    \begin{itemize}
+        \item \mybold{Create} a new benchmark : for a problem that does not have a benchmark yet.
+        \item Add a solver/dataset to an \mybold{existing} benchmark.
+    \end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Practical implementation}
+    \centering
+    % in this slide I will have 2 columns
+    % the one of the left will present a fake algorithm to solve an optimization problem
+    % It will feature on top the fake optimization problem and in the bottom the fake algorithm
+    % the column on the right will illustrate what each line in the algorithm corresponds to
+    % in a typical benchopt benchmark
+    % it will feature on top a tree structure of the files of the benchmark
+    % and in the bottom the code corresponding to the part of the algorithm that is currently highlighted
+    \noindent
+        \begin{minipage}[t]{0.41\textwidth}
+            \begin{equation*}
+                \operatorname{argmin}_x L(x, D)
+            \end{equation*}
+            % then the fake algorithm in pseudo-code using algorithm2e
+            \begin{algorithm}[H]
+                \LinesNumbered
+                \SetAlgoLined
+                \KwIn{\alt<3>{\colorboxed{marron}{\text{data }D, \text{ loss }L}}{data \alt<1>{\colorboxed{marron}{D}}{$D$}, loss \alt<2>{\colorboxed{marron}{L}}{$L$}}}
+                Set $x_0$\\
+                \While{\alt<4>{\colorboxed{marron}{\text{not converged}}}{not converged}}{
+                    \alt<5>{\colorboxed{marron}{x_n = x_{n-1}}}{$x_n = x_{n-1}$}
+                }
+                \Return{$x_n$}
+                \caption{Solver 1}
+            \end{algorithm}
+
+        \end{minipage}
+        \hfill
+        \begin{minipage}[t]{0.57\textwidth}
+            %on slide 1 we will have the tree structure with datasets/my_dataset.py and the corresponding code
+            \only<1>{
+            \dirtree{%
+                .1 my\_benchmark.
+                .2 datasets.
+                .3 dataset1.py.
+            }
+            \begin{beamercolorbox}[rounded=true,shadow=true,leftskip=2ex,colsep*=.75ex]{bgcolor}%
+                \texttt{
+                    \textcolor{kw}{\bf def} \textcolor{func}{get\_data}%
+                    (self):\\
+                    \hskip8ex return dict\{D: D\}
+                }
+            \end{beamercolorbox}%
+            \vskip1.5em
+            }
+            % on slide 2 we will have the tree structure with objective.py and the corresponding code
+            \only<2>{
+            \dirtree{%
+                .1 my\_benchmark.
+                .2 objective.py.
+            }
+            \begin{beamercolorbox}[rounded=true,shadow=true,leftskip=2ex,colsep*=.75ex]{bgcolor}%
+                \texttt{
+                    \textcolor{kw}{\bf def} \textcolor{func}{set\_data}%
+                    (self, D):\\
+                    \hskip8ex self.D = D\\
+                    \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{compute}%
+                    (self, x):\\
+                    \hskip8ex return L(x, self.D)\\
+                    \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{to\_dict}%
+                    (self):\\
+                    \hskip8ex return dict\{D=D, L=L\}
+                }
+        \end{beamercolorbox}%
+            }
+        % on slide 3 we will have the tree structure with solvers/my_solver.py and the corresponding code
+        \only<3->{
+            \dirtree{%
+                .1 my\_benchmark.
+                .2 solvers.
+                .3 solver1.py.
+            }
+            \begin{beamercolorbox}[rounded=true,shadow=true,leftskip=2ex,colsep*=.75ex]{bgcolor}%
+                \texttt{
+                    \textcolor{kw}{\bf def} \textcolor{func}{set\_objective}%
+                    (self, D, L):\\
+                    \hskip8ex self.D = D\\
+                    \hskip8ex self.L = L\\[1em]
+                    \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{run}%
+                    (self, callback):\\
+                    \hskip8ex x = np.random.randn(...)\\
+                    \hskip8ex \textcolor{kw}{\bf while} callback(x):\\
+                    \hskip12ex x = x\\
+                    \hskip8ex self.x = x\\[1em]
+                    \hskip4ex\textcolor{kw}{\bf def} \textcolor{func}{get\_result}%
+                    (self):\\
+                    \hskip8ex return x
+                }
+            \end{beamercolorbox}%
+        }
+        \end{minipage}
+
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\texttt{benchopt}}
+    \centering
+    \includegraphics[width=.9\textwidth]{benchopt}\\
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\texttt{benchopt: Making tedious tasks easy}}
+
+    {\bf Automating tasks:}\\[1.2em]
+    \begin{itemize}\itemsep.7em
+        \item Automatic installation of competitors solvers.
+        \item Parametrized datasets, objectives and solvers and run on cross products.
+        \item Make sure to quantify the variance.
+        \item Automatic caching.
+        \item First visualization of the results.
+        \item Automatic parallelization (locally or on a cluster), ... ?
+    \end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{The intro paper}
+
+    We have written a paper to introduce the project and the philosophy behind it.\\
+    \vspace{1em}
+    \cite{benchopt}\\
+    \vspace{1em}
+    We also highlight some examplary findings on different optimization problems similar to what you might encounter in your research.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Credits}
+    \begin{figure}
+         \centering
+         \hfill
+         \begin{subfigure}[b]{0.188\textwidth}
+             \centering
+            \includegraphics[width=0.969\textwidth]{jsalmon}
+            \caption{J. Salmon\\ INRIA Parietal}
+         \end{subfigure}
+         \hfill
+         \begin{subfigure}[b]{0.188\textwidth}
+             \centering
+            \includegraphics[width=0.969\textwidth]{agramfort}
+            \caption{A. Gramfort\\ INRIA Parietal}
+         \end{subfigure}
+         \hfill
+         \begin{subfigure}[b]{0.188\textwidth}
+             \centering
+            \includegraphics[width=0.969\textwidth]{tommoral}
+            \caption{T. Moreau\\ INRIA Parietal}
+         \end{subfigure}\hfill\\[2em]
+         \begin{subfigure}[b]{0.188\textwidth}
+             \centering
+             \includegraphics[width=0.969\textwidth]{nidham}
+             \caption{N. Gazagnadou\\Telecom Paris}
+         \end{subfigure}
+         \hfill
+         \begin{subfigure}[b]{0.188\textwidth}
+             \centering
+            \includegraphics[width=0.969\textwidth]{tanglef}
+             \caption{T. Lefort\\Univ. Montpellier}
+         \end{subfigure}
+         \hfill
+         \begin{subfigure}[b]{0.188\textwidth}
+             \centering
+             \includegraphics[width=0.969\textwidth]{mmassias}
+             \caption{M. Massias\\Univ. of Genova }
+         \end{subfigure}
+         \hfill
+         \begin{subfigure}[b]{0.188\textwidth}
+             \centering
+            \includegraphics[width=0.969\textwidth]{tomdlt}
+            \caption{T. Dupré la Tour\\ UC Berkeley}
+         \end{subfigure}
+    \end{figure}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Uncomment for references
+% \begin{frame}{Bibliographie}
+% \printbibliography
+% \end{frame}
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\end{document}
